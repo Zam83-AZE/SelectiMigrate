@@ -1,4 +1,91 @@
 {
+  "migrationName": "CustomerOrderDB_v1_to_v2",
+  "description": "Migration of customer and order data from v1 to v2",
+  "version": "1.0",
+  "createdAt": "2024-08-21T20:00:00Z",
+  "author": "John Doe",
+  "migrationType": "selective",
+  "source": {
+    "type": "PostgreSQL",
+    "version": "12.5",
+    "host": "source-db.example.com",
+    "port": 5432,
+    "database": "customerdb_v1",
+    "schema": "public",
+    "credentials": {
+      "username": "source_user",
+      "password": "{{SOURCE_DB_PASSWORD}}"
+    }
+  },
+  "target": {
+    "type": "PostgreSQL",
+    "version": "13.4",
+    "host": "target-db.example.com",
+    "port": 5432,
+    "database": "customerdb_v2",
+    "schema": "public",
+    "credentials": {
+      "username": "target_user",
+      "password": "{{TARGET_DB_PASSWORD}}"
+    }
+  },
+  "tables": [
+    {
+      "sourceName": "customers",
+      "targetName": "customers",
+      "primaryKey": "customer_id",
+      "migrationOptions": {
+        "migrateStructure": true,
+        "migrateData": true,
+        "truncateBeforeInsert": false,
+        "dataFilter": "WHERE created_at > '2023-01-01'",
+        "migrationOperation": "UPSERT",
+        "parallelMigration": true,
+        "parallelizationFactor": 4
+      },
+      "columns": [
+        {
+          "source": "customer_id",
+          "target": "id",
+          "type": "SERIAL",
+          "autoIncrement": true
+        },
+        {
+          "source": "first_name",
+          "target": "first_name",
+          "type": "VARCHAR(50)"
+        },
+        {
+          "source": "last_name",
+          "target": "last_name",
+          "type": "VARCHAR(50)"
+        },
+        {
+          "source": "email",
+          "target": "email",
+          "type": "VARCHAR(100)",
+          "unique": true
+        },
+        {
+          "source": "created_at",
+          "target": "registration_date",
+          "type": "TIMESTAMP WITH TIME ZONE"
+        }
+      ],
+      "transformations": [
+        {
+          "column": "email",
+          "action": "LOWERCASE"
+        }
+      ],
+      "indexesToCreate": [
+        {
+          "name": "idx_customer_email",
+          "columns": ["email"]
+        },
+        {
+          "name": "idx_customer
+{
           "name": "idx_customer_registration_date",
           "columns": ["registration_date"]
         }
